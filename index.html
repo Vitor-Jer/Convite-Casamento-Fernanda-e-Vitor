@@ -1,1 +1,804 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fernanda & Vitor — 20.11.2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Tenor+Sans&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     VARIÁVEIS — troque os links das fotos do casal aqui:
+     ============================================================ */
+  :root{
+    --photo-url: url("imagens/inicial.jpeg");
+    --photo-url-2: url("imagens/Beijo.jpeg");
+    --photo-url-3: url("imagens/aliancas.jpeg");
+
+    /* tema da capa (envelope) — permanece escuro */
+    --black-deep:   #0a0908;
+    --black-panel:  #131110;
+    --black-edge:   #1c1815;
+    --gold:         #c9a24d;
+    --gold-bright:  #e8c979;
+    --gold-dim:     #8a713a;
+    --cream:        #f4efe4;
+    --cream-dim:    #cabfa4;
+
+    /* tema do convite (após abrir) — branco, preto só em gradiente, dourado em destaque */
+    --paper:        #ffffff;
+    --paper-shade:  #ffffff;
+    --ink:          #211b15;
+    --ink-soft:     #211b15;
+    --gold-ink:     #a9782f;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    height:100%;
+    background:var(--paper);
+    font-family:'Tenor Sans', sans-serif;
+    color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  .display{ font-family:'Cormorant Garamond', serif; }
+
+  /* ---------------- STAGE ---------------- */
+  #stage{
+    position:relative;
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* ================= COVER (envelope) ================= */
+  #cover{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(ellipse at 50% 0%, #1a1613 0%, var(--black-deep) 60%);
+    transition:opacity 1s ease, visibility 1s ease;
+  }
+  #cover.hidden{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+
+  .envelope-wrap{
+    position:relative;
+    width:88vw;
+    max-width:360px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+
+  @keyframes fadeIn{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  /* ---------- envelope body (the letter) ---------- */
+  .envelope{
+    position:relative;
+    width:100%;
+    aspect-ratio: 19 / 24;
+    box-shadow:0 30px 70px rgba(0,0,0,0.65);
+    opacity:0;
+    animation:fadeIn 1.2s ease forwards 0.2s;
+    perspective:1400px;
+  }
+
+  .flap-left, .flap-right{
+    position:absolute;
+    top:0; bottom:0;
+    width:50%;
+    background-image:radial-gradient(ellipse 200% 100% at 50% 28%, #171310 0%, #0c0a08 72%);
+    background-size:200% 100%;
+    transition:transform 1s cubic-bezier(.4,0,.2,1);
+    backface-visibility:hidden;
+    z-index:1;
+  }
+  .flap-left{ left:0; background-position:left top; transform-origin:left center; }
+  .flap-right{ right:0; background-position:right top; transform-origin:right center; }
+
+  #cover.opening .flap-left{ transform:rotateY(-100deg); }
+  #cover.opening .flap-right{ transform:rotateY(100deg); }
+
+  .envelope svg.flap{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+  }
+
+  /* ---------- monograma superior — perfeitamente centrado ---------- */
+  .monogram-top{
+    position:absolute;
+    top:26%;
+    left:0;
+    right:0;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:2.3rem;
+    letter-spacing:0.1em;
+    color:var(--gold-bright);
+    text-shadow:0 0 14px rgba(232,201,121,0.45);
+    z-index:2;
+    opacity:0;
+    animation:fadeIn 1.2s ease forwards 0.6s;
+  }
+
+  .seal-hint{
+    position:absolute;
+    top:87%;
+    left:0;
+    right:0;
+    width:100%;
+    text-align:center;
+    font-size:0.66rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+    z-index:3;
+    opacity:0;
+    animation:fadeIn 1.2s ease forwards 1.6s;
+  }
+
+  /* ---------- dedo indicador ao lado do selo ---------- */
+  .seal-pointer{
+    position:absolute;
+    top:67%;
+    left:55%;
+    font-size:1.9rem;
+    line-height:1;
+    transform:translate(0, 0) rotate(-45deg);
+    transform-origin:center;
+    z-index:4;
+    pointer-events:none;
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,0.55));
+    opacity:0;
+    animation:fadeIn 1s ease forwards 1.9s;
+  }
+
+  #cover.opening .seal-pointer{
+    transition:opacity .35s ease;
+    opacity:0;
+  }
+
+  /* ---------- selo dourado (estilo medalha/selo oficial) ---------- */
+  #seal-btn{
+    position:absolute;
+    top:60%;
+    left:39%;
+    transform:translate(-50%, -50%);
+    z-index:3;
+    width:23%;
+    aspect-ratio:1/1;
+    min-width:78px;
+    max-width:98px;
+    border:none;
+    background:none;
+    padding:0;
+    cursor:pointer;
+    filter:drop-shadow(0 12px 22px rgba(0,0,0,0.6));
+    opacity:0;
+    animation:fadeIn 1.2s ease forwards 1.2s, breathe 3.2s ease-in-out infinite 2.4s;
+    transition:transform .25s ease;
+  }
+
+  #seal-btn svg{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+
+  #seal-btn:hover{ transform:translate(-50%, -50%) scale(1.06); }
+  #seal-btn:active{ transform:translate(-50%, -50%) scale(0.96); }
+
+  @keyframes breathe{
+    0%,100%{ filter:drop-shadow(0 12px 22px rgba(0,0,0,0.6)); }
+    50%{ filter:drop-shadow(0 12px 26px rgba(201,162,77,0.35)); }
+  }
+
+  .seal-mono{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:19px;
+    fill:#4a2f10;
+    text-shadow:none;
+  }
+
+  /* seal crack / open animation */
+  #cover.opening .seal-hint,
+  #cover.opening .monogram-top{
+    transition:opacity .5s ease;
+    opacity:0;
+  }
+  #cover.opening #seal-btn{
+    animation:sealPulse .6s ease forwards;
+  }
+  @keyframes sealPulse{
+    0%{ transform:translate(-50%, -50%) scale(1); }
+    40%{ transform:translate(-50%, -50%) scale(1.18); }
+    100%{ transform:translate(-50%, -50%) scale(0.2); opacity:0; }
+  }
+
+  /* ================= INVITE — branco, preto só em gradiente, dourado em destaque ================= */
+  #invite{
+    position:relative;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    padding:56px 20px 90px;
+    background:var(--paper);
+  }
+
+  .card{
+    width:min(94vw, 460px);
+    background:linear-gradient(165deg, var(--paper) 0%, var(--paper) 62%, var(--paper-shade) 100%);
+    border:1px solid rgba(33,27,21,0.08);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.7) inset,
+      0 30px 60px rgba(0,0,0,0.12),
+      0 0 0 1px rgba(169,120,47,0.15);
+    padding:46px 34px 44px;
+    text-align:center;
+    position:relative;
+    opacity:0;
+    transform:translateY(24px);
+  }
+  .card.reveal{
+    animation:cardIn 1s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  @keyframes cardIn{
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .corner{
+    position:absolute;
+    width:26px; height:26px;
+    border:1px solid var(--gold-dim);
+    opacity:.8;
+  }
+  .corner.tl{ top:10px; left:10px; border-right:none; border-bottom:none; }
+  .corner.tr{ top:10px; right:10px; border-left:none; border-bottom:none; }
+  .corner.bl{ bottom:10px; left:10px; border-right:none; border-top:none; }
+  .corner.br{ bottom:10px; right:10px; border-left:none; border-top:none; }
+
+  .monogram-inv{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:2.1rem;
+    color:var(--gold-ink);
+    margin-bottom:26px;
+  }
+
+  .photo-frame{
+    position:relative;
+    width:100%;
+    aspect-ratio:4/5;
+    margin-bottom:28px;
+  }
+
+  .photo-layer{
+    position:absolute;
+    inset:0;
+    background-size:cover;
+    background-position:center;
+    opacity:0;
+    transition:opacity 2.2s ease-in-out;
+
+    /* degradê nas bordas: a foto se dissolve no papel em vez de terminar em caixa reta */
+    -webkit-mask-image:
+      radial-gradient(ellipse 78% 82% at 50% 42%, #000 55%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      radial-gradient(ellipse 78% 82% at 50% 42%, #000 55%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%);
+    mask-composite: intersect;
+  }
+
+  .photo-layer.active{ opacity:1; }
+
+  .photo-layer[data-photo="1"]{ background-image:var(--photo-url); }
+  .photo-layer[data-photo="2"]{ background-image:var(--photo-url-2); }
+  .photo-layer[data-photo="3"]{ background-image:var(--photo-url-3); }
+
+  .verse{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:0.98rem;
+    letter-spacing:0.02em;
+    color:var(--ink-soft);
+    line-height:1.6;
+    margin-bottom:16px;
+    padding:0 6px;
+  }
+
+  .verse-ref{
+    display:block;
+    margin-top:6px;
+    font-style:normal;
+    font-size:0.90rem;
+    letter-spacing:0.08em;
+    color:var(--gold-dim);
+  }
+
+  .blessing{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:0.98rem;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    line-height:1.7;
+    margin-bottom:20px;
+  }
+
+  .parents{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    display:flex;
+    justify-content:center;
+    gap:28px;
+    margin-bottom:20px;
+    font-size:0.97rem;
+    letter-spacing:0.04em;
+    color:var(--ink-soft);
+    line-height:1.7;
+  }
+
+  .parents-col{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .names-inv{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:2.5rem;
+    line-height:1.25;
+    color:var(--gold-ink);
+    text-shadow:0 0 16px rgba(232,201,121,0.35);
+    margin-bottom:20px;
+  }
+
+  .invite-text{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:0.98rem;
+    letter-spacing:0.1em;
+    color:var(--ink-soft);
+    margin-bottom:26px;
+  }
+
+  .divider{
+    width:60px;
+    height:1px;
+    background:var(--gold-dim);
+    margin:0 auto 26px;
+  }
+
+  .date-block{
+    margin-bottom:30px;
+  }
+  .date-block .day{
+    font-family:'Cormorant Garamond', serif;
+    font-size:2.4rem;
+    color:var(--ink);
+    letter-spacing:0.02em;
+  }
+  .date-block .month-year{
+    font-size:0.78rem;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--gold-ink);
+    margin-top:4px;
+  }
+  .date-block .hour{
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .countdown{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:0 0 30px;
+  }
+  .cd-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:38px;
+  }
+  .cd-num{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.5rem;
+    color:var(--ink);
+    line-height:1;
+  }
+  .cd-label{
+    font-size:0.56rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--gold-ink);
+    margin-top:3px;
+  }
+  .cd-sep{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.3rem;
+    color:var(--gold-dim);
+    margin-bottom:14px;
+  }
+  .icons-hint{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:1rem;
+    color:var(--ink-soft);
+    margin-bottom:18px;
+  }
+
+  .icon-row{
+    display:flex;
+    justify-content:center;
+    gap:22px;
+    margin-bottom:34px;
+  }
+
+  .icon-btn{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    color:var(--ink-soft);
+    width:82px;
+  }
+  .icon-circle{
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    background:linear-gradient(145deg,#ffffff,#f2ede1);
+    border:1px solid var(--gold-dim);
+    box-shadow:0 8px 16px rgba(0,0,0,0.08);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .icon-btn:hover .icon-circle{
+    transform:translateY(-3px);
+    border-color:var(--gold-ink);
+    box-shadow:0 10px 20px rgba(169,120,47,0.25);
+  }
+  .icon-circle svg{
+    width:22px; height:22px;
+    stroke:var(--gold-ink);
+    fill:none;
+  }
+  .icon-label{
+    font-family:'Cormorant Garamond', serif;
+    font-size:0.80rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  .dresscode{
+    margin:0 0 30px;
+    padding:20px 16px 18px;
+    border:1px solid var(--gold-dim);
+    background:linear-gradient(165deg, var(--paper) 0%, var(--paper-shade) 100%);
+  }
+  .dresscode-title{
+    font-family:'Cormorant Garamond', serif;
+    font-size:0.80rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--gold-ink);
+    margin-bottom:14px;
+  }
+  .dresscode-swatches{
+    display:flex;
+    justify-content:center;
+    gap:26px;
+    margin-bottom:14px;
+  }
+  .dresscode-swatch{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  .dresscode-dot{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    border:1px solid var(--gold-dim);
+  }
+  .dresscode-dot.black{ background:var(--black-deep); }
+  .dresscode-dot.white{ background:var(--paper); box-shadow:0 0 0 1px rgba(33,27,21,0.08) inset; }
+  .dresscode-swatch-label{
+    font-family:'Cormorant Garamond', serif;
+    font-size:0.70rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    line-height:1.4;
+  }
+  .dresscode-text{
+    font-family:'Cormorant Garamond', serif;
+    font-size:0.90rem;
+    letter-spacing:0.02em;
+    color:var(--ink-soft);
+    line-height:1.7;
+  }
+  .dresscode-dot-inline{
+    display:inline-block;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    border:1px solid var(--gold-dim);
+    vertical-align:middle;
+    margin:0 2px;
+  }
+  .dresscode-dot-inline.black{ background:var(--black-deep); }
+  .dresscode-dot-inline.white{ background:var(--paper); box-shadow:0 0 0 1px rgba(33,27,21,0.08) inset; }
+
+  .footer-msg{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:1.15rem;
+    color:var(--gold-ink);
+  }
+
+  @media (max-width:380px){
+    .names-inv{ font-size:2.1rem; }
+    .card{ padding:38px 22px 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- ================= COVER / ENVELOPE ================= -->
+  <div id="cover">
+    <div class="envelope-wrap">
+      <div class="envelope">
+        <div class="flap-left"></div>
+        <div class="flap-right"></div>
+        <svg class="flap" viewBox="0 0 380 480" preserveAspectRatio="none" style="z-index:2;">
+            <line x1="0" y1="0" x2="190" y2="350" stroke="rgba(201,162,77,0.3)" stroke-width="1"/>
+            <line x1="380" y1="0" x2="190" y2="350" stroke="rgba(201,162,77,0.3)" stroke-width="1"/>
+        </svg>
+
+        <div class="monogram-top">V F</div>
+
+        <button id="seal-btn" aria-label="Abrir convite">
+          <svg viewBox="0 0 100 100">
+            <defs>
+              <radialGradient id="sealGrad" cx="35%" cy="28%" r="75%">
+                <stop offset="0%" stop-color="#fff3cf"/>
+                <stop offset="28%" stop-color="#f3cf6e"/>
+                <stop offset="62%" stop-color="#d9a53a"/>
+                <stop offset="100%" stop-color="#a9781f"/>
+              </radialGradient>
+              <radialGradient id="sealCenter" cx="35%" cy="30%" r="80%">
+                <stop offset="0%" stop-color="#fff6dc"/>
+                <stop offset="45%" stop-color="#f0cd70"/>
+                <stop offset="100%" stop-color="#c99a3a"/>
+              </radialGradient>
+            </defs>
+
+            <!-- borda recortada (bolinhas) -->
+            <g fill="url(#sealGrad)">
+              <circle cx="92.0" cy="50.0" r="9"/>
+              <circle cx="90.95" cy="59.35" r="9"/>
+              <circle cx="87.84" cy="68.22" r="9"/>
+              <circle cx="82.84" cy="76.19" r="9"/>
+              <circle cx="76.19" cy="82.84" r="9"/>
+              <circle cx="68.22" cy="87.84" r="9"/>
+              <circle cx="59.35" cy="90.95" r="9"/>
+              <circle cx="50.0" cy="92.0" r="9"/>
+              <circle cx="40.65" cy="90.95" r="9"/>
+              <circle cx="31.78" cy="87.84" r="9"/>
+              <circle cx="23.81" cy="82.84" r="9"/>
+              <circle cx="17.16" cy="76.19" r="9"/>
+              <circle cx="12.16" cy="68.22" r="9"/>
+              <circle cx="9.05" cy="59.35" r="9"/>
+              <circle cx="8.0" cy="50.0" r="9"/>
+              <circle cx="9.05" cy="40.65" r="9"/>
+              <circle cx="12.16" cy="31.78" r="9"/>
+              <circle cx="17.16" cy="23.81" r="9"/>
+              <circle cx="23.81" cy="17.16" r="9"/>
+              <circle cx="31.78" cy="12.16" r="9"/>
+              <circle cx="40.65" cy="9.05" r="9"/>
+              <circle cx="50.0" cy="8.0" r="9"/>
+              <circle cx="59.35" cy="9.05" r="9"/>
+              <circle cx="68.22" cy="12.16" r="9"/>
+              <circle cx="76.19" cy="17.16" r="9"/>
+              <circle cx="82.84" cy="23.81" r="9"/>
+              <circle cx="87.84" cy="31.78" r="9"/>
+              <circle cx="90.95" cy="40.65" r="9"/>
+            </g>
+
+            <!-- disco central -->
+            <circle cx="50" cy="50" r="40" fill="url(#sealCenter)"/>
+            <circle cx="50" cy="50" r="34" fill="none" stroke="#a9781f" stroke-width="0.8" opacity="0.55"/>
+
+            <!-- brilho -->
+            <ellipse cx="36" cy="30" rx="20" ry="13" fill="#ffffff" opacity="0.35"/>
+
+            <!-- monograma -->
+            <text x="50" y="57" text-anchor="middle" class="seal-mono">VF</text>
+          </svg>
+        </button>
+
+        <div class="seal-pointer" aria-hidden="true">👆🏼</div>
+
+        <div class="seal-hint">Toque no lacre para abrir</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INVITE ================= -->
+  <div id="invite">
+    <div class="card" id="inviteCard">
+      <span class="corner tl"></span>
+      <span class="corner tr"></span>
+      <span class="corner bl"></span>
+      <span class="corner br"></span>
+
+      <div class="photo-frame" aria-label="Foto do casal">
+        <div class="photo-layer active" data-photo="1"></div>
+        <div class="photo-layer" data-photo="2"></div>
+        <div class="photo-layer" data-photo="3"></div>
+      </div>
+
+      <div class="verse">“Assim, eles já não são dois, mas sim uma só carne. Portanto, o que Deus uniu, ninguém separa.”<span class="verse-ref">– Mateus 19:6</span></div>
+
+      <div class="names-inv">Fernanda<br>&amp;<br>Vitor</div>
+
+      <div class="blessing">Com a bênção de Deus e de seus pais</div>
+
+      <div class="parents">
+        <div class="parents-col">
+          <div>Lucineide Emiliano</div>
+          <div>Flávio José</div>
+        </div>
+        <div class="parents-col">
+          <div>Eunice Correia</div>
+          <div>Jailton Jerônimo</div>
+        </div>
+      </div>
+
+      <div class="invite-text">Convidam para a cerimônia de seu casamento</div>
+
+      <div class="divider"></div>
+
+      <div class="date-block">
+        <div class="day">20</div>
+        <div class="month-year">Novembro de 2026</div>
+        <div class="hour">às 17h00</div>
+      </div>
+
+      <div class="countdown" id="countdown">
+        <div class="cd-item"><span class="cd-num" id="cd-days">00</span><span class="cd-label">dias</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-item"><span class="cd-num" id="cd-hours">00</span><span class="cd-label">horas</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-item"><span class="cd-num" id="cd-mins">00</span><span class="cd-label">min</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-item"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">seg</span></div>
+      </div>
+
+      <div class="dresscode">
+        <div class="dresscode-title">Traje</div>
+        <div class="dresscode-text"><strong>Uma pequena orientação aos nossos convidados 🤍</strong><br><br>Para deixar nosso grande dia ainda mais especial e harmonioso, pedimos carinhosamente que evitem os tons preto e branco em seus looks.<br><br>O preto (<span class="dresscode-dot-inline black"></span>) será reservado aos padrinhos e o branco (<span class="dresscode-dot-inline white"></span>), exclusivamente à noiva. ✨<br><br>Agradecemos o carinho e a compreensão de todos!</div>
+      </div>
+
+      <div class="icons-hint">Toque no ícone para interagir</div>
+
+      <div class="icon-row">
+        <a class="icon-btn" href="https://www.google.com/maps/place/Rey+House+Macei%C3%B3/@-9.5358393,-35.8034448,17z/data=!3m1!4b1!4m6!3m5!1s0x7014f1bde6b5bed:0xe41e17ad04c9497f!8m2!3d-9.5358393!4d-35.8008699!16s%2Fg%2F11fnh57s2d" target="_blank" rel="noopener">
+          <span class="icon-circle">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0Z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </span>
+          <span class="icon-label">Localização</span>
+        </a>
+
+        <a class="icon-btn" href="https://forms.gle/6efGKeAipV9izADu6" target="_blank" rel="noopener">
+          <span class="icon-circle">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9s1.3-6.4 3.8-9Z"/>
+            </svg>
+          </span>
+          <span class="icon-label">Presença</span>
+        </a>
+
+        <a class="icon-btn" href="https://noivos.casar.com/fernanda-e-vitor-2026-11-20#/home" target="_blank" rel="noopener">
+          <span class="icon-circle">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="9" width="18" height="12" rx="1"/>
+              <path d="M3 9h18M12 9v12M12 9c-1.7 0-4-1-4-3.2C8 4.2 9.3 3 10.8 3 12 3 12 5.5 12 9Zm0 0c1.7 0 4-1 4-3.2C16 4.2 14.7 3 13.2 3 12 3 12 5.5 12 9Z"/>
+            </svg>
+          </span>
+          <span class="icon-label">Presentes</span>
+        </a>
+      </div>
+
+      <div class="footer-msg">Contamos com a sua presença!</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const cover = document.getElementById('cover');
+  const sealBtn = document.getElementById('seal-btn');
+  const inviteCard = document.getElementById('inviteCard');
+
+  sealBtn.addEventListener('click', () => {
+    cover.classList.add('opening');
+    setTimeout(() => {
+      cover.classList.add('hidden');
+      inviteCard.classList.add('reveal');
+      document.getElementById('invite').scrollIntoView({behavior:'instant', block:'start'});
+    }, 1200);
+  });
+  (function(){
+  const target = new Date("2026-11-20T17:00:00-03:00").getTime();
+  function updateCountdown(){
+    const diff = Math.max(target - Date.now(), 0);
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff / 3600000) % 24);
+    const m = Math.floor((diff / 60000) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    document.getElementById('cd-days').textContent  = String(d).padStart(2,'0');
+    document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
+    document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+})();
+
+(function(){
+  const layers = document.querySelectorAll('.photo-layer');
+  if(layers.length < 2) return;
+  let current = 0;
+  const INTERVAL_MS = 4500; // tempo que cada foto fica visível antes de trocar
+
+  setInterval(() => {
+    layers[current].classList.remove('active');
+    current = (current + 1) % layers.length;
+    layers[current].classList.add('active');
+  }, INTERVAL_MS);
+})();
+</script>
+
+</body>
+</html>
